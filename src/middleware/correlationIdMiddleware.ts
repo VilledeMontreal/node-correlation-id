@@ -11,12 +11,12 @@ import { correlationIdService } from '../services/correlationIdService';
  */
 export let createCorrelationIdMiddleware = (
   filter?: (req: express.Request) => boolean
-): ((req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>) => {
+): ((req: express.Request, res: express.Response, next: express.NextFunction) => void) => {
   const correlationIdMiddleware = (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
-  ): Promise<void> => {
+  ): void => {
     if (filter && !filter(req)) {
       next();
     } else {
@@ -38,7 +38,6 @@ export let createCorrelationIdMiddleware = (
       }
       correlationIdService.withId(next, correlationId);
     }
-    return null;
   };
 
   return correlationIdMiddleware;
