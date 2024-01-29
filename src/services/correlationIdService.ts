@@ -111,9 +111,7 @@ class CorrelationIdServiceWithClsHooked implements ICorrelationIdService {
     return new Promise<T>((resolve, reject) => {
       this.withId(() => {
         try {
-          work()
-            .then(resolve)
-            .catch(reject);
+          work().then(resolve).catch(reject);
         } catch (err) {
           reject(err);
         }
@@ -139,7 +137,7 @@ class CorrelationIdServiceWithClsHooked implements ICorrelationIdService {
     return {
       current: this.getId(),
       receivedInRequest: req[constants.requestExtraVariables.cidReceivedInRequest],
-      generated: req[constants.requestExtraVariables.cidNew]
+      generated: req[constants.requestExtraVariables.cidNew],
     };
   }
 
@@ -212,7 +210,7 @@ class CorrelationIdServiceWithAsyncLocalStorage implements ICorrelationIdService
     return {
       current: this.getId(),
       receivedInRequest: req[constants.requestExtraVariables.cidReceivedInRequest],
-      generated: req[constants.requestExtraVariables.cidNew]
+      generated: req[constants.requestExtraVariables.cidNew],
     };
   }
 
@@ -239,7 +237,7 @@ class CorrelationIdServiceWithAsyncLocalStorage implements ICorrelationIdService
   private bindFunction<T extends Function>(target: T): T {
     const storage = this.storage;
     const store = this.storage.getStore();
-    return function(...args: any[]) {
+    return function (...args: any[]) {
       storage.enterWith(store);
       return target.call(this, ...args);
     } as any;
@@ -250,6 +248,6 @@ function canUseAsyncLocalStorage() {
   return semver.satisfies(process.versions.node, '>=13.10.0') && !!AsyncLocalStorage;
 }
 
-export let correlationIdService: ICorrelationIdService = canUseAsyncLocalStorage()
+export const correlationIdService: ICorrelationIdService = canUseAsyncLocalStorage()
   ? new CorrelationIdServiceWithAsyncLocalStorage()
   : new CorrelationIdServiceWithClsHooked();

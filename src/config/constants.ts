@@ -32,9 +32,9 @@ export class Constants {
   get requestExtraVariables() {
     return {
       cidReceivedInRequest: '_cidReceivedInRequest',
-      cidNew: '_cidNew'
+      cidNew: '_cidNew',
     };
   }
 }
 
-export let constants: Constants = new Constants();
+export const constants: Constants = new Constants();

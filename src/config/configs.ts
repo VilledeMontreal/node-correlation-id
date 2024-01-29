@@ -18,9 +18,11 @@ export class Configs {
    */
   get loggerCreator(): (name: string) => ILogger {
     if (!this.loggerCreatorVar) {
-      throw new Error(`The Logger Creator HAS to be set as a configuration! Please call the init(...) fonction first.`);
+      throw new Error(
+        `The Logger Creator HAS to be set as a configuration! Please call the init(...) fonction first.`,
+      );
     }
     return this.loggerCreatorVar;
   }
 }
-export let configs: Configs = new Configs();
+export const configs: Configs = new Configs();

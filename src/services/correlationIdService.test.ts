@@ -7,14 +7,14 @@ import { correlationIdService } from './correlationIdService';
 
 setTestingConfigurations();
 
-const uuidMatcher: RegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const uuidMatcher = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-async function timeout(work: (params?: any) => any, ms: number = 50) {
-  return new Promise<void>(resolve =>
+async function timeout(work: (params?: any) => any, ms = 50) {
+  return new Promise<void>((resolve) =>
     setTimeout(() => {
       work();
       resolve();
-    }, ms)
+    }, ms),
   );
 }
 
@@ -29,7 +29,7 @@ describe('Correlation Id Service', () => {
   describe('withId correlator', () => {
     it('with sync function', () => {
       // GIVEN
-      const expectedResult: string = '⭐';
+      const expectedResult = '⭐';
 
       // WHEN
       const result = correlationIdService.withId(() => {
@@ -43,7 +43,7 @@ describe('Correlation Id Service', () => {
     });
 
     it('with async function', async () => {
-      let done: boolean = false;
+      let done = false;
 
       const promise = correlationIdService.withId(async () => {
         await timeout(() => {
@@ -71,7 +71,7 @@ describe('Correlation Id Service', () => {
       const emitter = new EventEmitter();
       let receivedValue = 0;
       let receivedCid = '';
-      emitter.on('test', value => {
+      emitter.on('test', (value) => {
         receivedValue = value;
         receivedCid = correlationIdService.getId();
       });
@@ -110,7 +110,7 @@ describe('Correlation Id Service', () => {
         title: 'Hello-',
         say(msg: string): string {
           return this.title + msg + correlationIdService.getId();
-        }
+        },
       };
 
       // WHEN
@@ -124,13 +124,13 @@ describe('Correlation Id Service', () => {
     });
 
     it('with resolved promise', async () => {
-      let done: boolean = false;
+      let done = false;
 
       const promise = correlationIdService.withId(() =>
-        Promise.resolve(correlationIdService.getId()).then(id => {
+        Promise.resolve(correlationIdService.getId()).then((id) => {
           assert.match(id, uuidMatcher, 'Promise should resolve correlation id');
           done = true;
-        })
+        }),
       );
 
       // "withId" doesn't care about a promise to be floating or not
@@ -145,22 +145,30 @@ describe('Correlation Id Service', () => {
 
         correlationIdService.withId(() => {
           const cid2 = correlationIdService.getId();
-          assert.notEqual(cid2, cid1, 'correlationIdService.getId() should return a different id for every scope');
+          assert.notEqual(
+            cid2,
+            cid1,
+            'correlationIdService.getId() should return a different id for every scope',
+          );
           assert.match(cid2, uuidMatcher, 'correlationIdService.getId() should return a UUID');
         });
 
         const cid3 = correlationIdService.getId();
-        assert.strictEqual(cid3, cid1, 'correlationIdService.getId() should return the same id for the same scope');
+        assert.strictEqual(
+          cid3,
+          cid1,
+          'correlationIdService.getId() should return the same id for the same scope',
+        );
         assert.match(cid3, uuidMatcher, 'correlationIdService.getId() should return a UUID');
       });
     });
 
-    it('with async function', async function() {
+    it('with async function', async function () {
       const duration = 25;
       setSlowThreshold(this, duration);
 
       // GIVEN
-      const expectedResult: string = '⭐';
+      const expectedResult = '⭐';
 
       // WHEN
       const result = await correlationIdService.withId(async () => {
@@ -178,12 +186,12 @@ describe('Correlation Id Service', () => {
   });
 
   describe('withIdAsync correlator', () => {
-    it('with async function', async function() {
+    it('with async function', async function () {
       const duration = 25;
       setSlowThreshold(this, duration);
 
       // GIVEN
-      const expectedResult: string = '⭐';
+      const expectedResult = '⭐';
 
       // WHEN
       const result = await correlationIdService.withIdAsync(async () => {
@@ -211,7 +219,7 @@ describe('Correlation Id Service', () => {
       }
     });
 
-    it('with error after await', async function() {
+    it('with error after await', async function () {
       const duration = 25;
       setSlowThreshold(this, duration);
 
@@ -228,7 +236,7 @@ describe('Correlation Id Service', () => {
       }
     });
 
-    it('with nested async functions', async function() {
+    it('with nested async functions', async function () {
       const duration = 25;
       setSlowThreshold(this, 2 * duration);
 
