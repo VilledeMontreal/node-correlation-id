@@ -9,13 +9,13 @@ import { correlationIdService } from '../services/correlationIdService';
  * @param filter a filter which is going to be called with the request to see if a
  * colleration id scope must be managed or not.
  */
-export let createCorrelationIdMiddleware = (
-  filter?: (req: express.Request) => boolean
+export const createCorrelationIdMiddleware = (
+  filter?: (req: express.Request) => boolean,
 ): ((req: express.Request, res: express.Response, next: express.NextFunction) => void) => {
   const correlationIdMiddleware = (
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ): void => {
     if (filter && !filter(req)) {
       next();

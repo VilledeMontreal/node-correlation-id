@@ -7,10 +7,10 @@ import { setTestingConfigurations } from '../utils/testingConfigurations';
 import { createCorrelationIdMiddleware } from './correlationIdMiddleware';
 
 function delay(millis: number): Promise<void> {
-  return new Promise<void>(resolve =>
+  return new Promise<void>((resolve) =>
     setTimeout(() => {
       resolve();
-    }, millis)
+    }, millis),
   );
 }
 
@@ -19,7 +19,7 @@ function delay(millis: number): Promise<void> {
 // ==========================================
 setTestingConfigurations();
 
-const uuidMatcher: RegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const uuidMatcher = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 // ==========================================
 // Correlation ID service
@@ -35,30 +35,29 @@ describe('Correlation ID Middleware', () => {
       res.end();
     });
 
-    await request(app)
-      .get('/')
-      .send();
+    await request(app).get('/').send();
   });
 
   it('should get correlation id from incoming request', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     const app: express.Application = express();
     app.use(createCorrelationIdMiddleware());
     app.get('/', (req, res) => {
       const actual = correlationIdService.getId();
-      assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
+      assert.strictEqual(
+        actual,
+        testId,
+        'getId() should return id from x-correlation-id header of inbound request',
+      );
       res.end();
     });
 
-    await request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
   });
 
   it('should maintain correlation id with async callbacks', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     let actual = '';
     let actual2 = '';
@@ -73,18 +72,23 @@ describe('Correlation ID Middleware', () => {
     });
 
     assert.isUndefined(correlationIdService.getId());
-    await request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
 
     assert.isUndefined(correlationIdService.getId());
-    assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual2, testId, 'getId() should return id from x-correlation-id header of inbound request');
+    assert.strictEqual(
+      actual,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual2,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
   });
 
   it('should maintain correlation id with async/await operations', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     let actual = '';
     let actual2 = '';
@@ -103,19 +107,24 @@ describe('Correlation ID Middleware', () => {
     });
 
     assert.isUndefined(correlationIdService.getId());
-    await request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
 
     assert.isUndefined(correlationIdService.getId());
-    assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual2, testId, 'getId() should return id from x-correlation-id header of inbound request');
+    assert.strictEqual(
+      actual,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual2,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
   });
 
   it('should keep correlation ids in nested requests', async () => {
-    const testId: string = 'correlation-id-123';
-    const testId2: string = 'correlation-id-456';
+    const testId = 'correlation-id-123';
+    const testId2 = 'correlation-id-456';
 
     let actual = '';
     let actual2 = '';
@@ -129,10 +138,7 @@ describe('Correlation ID Middleware', () => {
         actual = correlationIdService.getId();
         await delay(250);
         actual2 = correlationIdService.getId();
-        await request(app)
-          .get('/foo')
-          .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId2)
-          .send();
+        await request(app).get('/foo').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId2).send();
         actual3 = correlationIdService.getId();
       } catch (e) {
         next(e);
@@ -153,24 +159,41 @@ describe('Correlation ID Middleware', () => {
     });
 
     assert.isUndefined(correlationIdService.getId());
-    await request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
 
     assert.isUndefined(correlationIdService.getId());
-    assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual2, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual3, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual4, testId2, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual5, testId2, 'getId() should return id from x-correlation-id header of inbound request');
+    assert.strictEqual(
+      actual,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual2,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual3,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual4,
+      testId2,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual5,
+      testId2,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
   });
 
   // tslint:disable: no-console
-  it('should keep correlation ids separated in parallel requests', async function() {
+  it('should keep correlation ids separated in parallel requests', async function () {
     this.timeout(5000);
-    const testId: string = 'correlation-id-123';
-    const testId2: string = 'correlation-id-456';
+    const testId = 'correlation-id-123';
+    const testId2 = 'correlation-id-456';
 
     let actual = '';
     let actual2 = '';
@@ -212,10 +235,7 @@ describe('Correlation ID Middleware', () => {
 
     console.log('send req1');
     assert.isUndefined(correlationIdService.getId());
-    const req1 = request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    const req1 = request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
     console.log('send req2');
     assert.isUndefined(correlationIdService.getId());
     const req2 = request(app)
@@ -224,14 +244,30 @@ describe('Correlation ID Middleware', () => {
       .send();
     await Promise.all([req1, req2]);
     assert.isUndefined(correlationIdService.getId());
-    assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual2, testId, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual4, testId2, 'getId() should return id from x-correlation-id header of inbound request');
-    assert.strictEqual(actual5, testId2, 'getId() should return id from x-correlation-id header of inbound request');
+    assert.strictEqual(
+      actual,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual2,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual4,
+      testId2,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
+    assert.strictEqual(
+      actual5,
+      testId2,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
   });
 
   it('should work with operations causing errors', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     let actual = '';
     const app: express.Application = express();
@@ -248,11 +284,15 @@ describe('Correlation ID Middleware', () => {
       .send();
     assert.strictEqual(result.status, 500);
     assert.isUndefined(correlationIdService.getId());
-    assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
+    assert.strictEqual(
+      actual,
+      testId,
+      'getId() should return id from x-correlation-id header of inbound request',
+    );
   });
 
   it('a filter can be specified', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     const filter = (req: express.Request): boolean => {
       if (req.path.startsWith('/ok/')) {
@@ -266,12 +306,20 @@ describe('Correlation ID Middleware', () => {
 
     app.get('/ok/1', (req, res) => {
       const actual = correlationIdService.getId();
-      assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
+      assert.strictEqual(
+        actual,
+        testId,
+        'getId() should return id from x-correlation-id header of inbound request',
+      );
       res.end();
     });
     app.get('/ok/2', (req, res) => {
       const actual = correlationIdService.getId();
-      assert.strictEqual(actual, testId, 'getId() should return id from x-correlation-id header of inbound request');
+      assert.strictEqual(
+        actual,
+        testId,
+        'getId() should return id from x-correlation-id header of inbound request',
+      );
       res.end();
     });
     app.get('/notok/1', (req, res) => {
@@ -280,24 +328,15 @@ describe('Correlation ID Middleware', () => {
       res.end();
     });
 
-    await request(app)
-      .get('/ok/1')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/ok/1').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
 
-    await request(app)
-      .get('/ok/2')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/ok/2').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
 
-    await request(app)
-      .get('/notok/1')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/notok/1').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
   });
 
   it('getCidInfo() cid received', async () => {
-    const testId: string = 'correlation-id-123';
+    const testId = 'correlation-id-123';
 
     const app: express.Application = express();
     app.use(createCorrelationIdMiddleware());
@@ -310,10 +349,7 @@ describe('Correlation ID Middleware', () => {
       res.end();
     });
 
-    await request(app)
-      .get('/')
-      .set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId)
-      .send();
+    await request(app).get('/').set(httpHeaderFieldsTyped.X_CORRELATION_ID, testId).send();
   });
 
   it('getCidInfo() cid generated', async () => {
@@ -328,8 +364,6 @@ describe('Correlation ID Middleware', () => {
       res.end();
     });
 
-    await request(app)
-      .get('/')
-      .send();
+    await request(app).get('/').send();
   });
 });
