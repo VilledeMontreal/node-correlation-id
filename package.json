@@ -1,6 +1,6 @@
 {
   "name": "@villedemontreal/correlation-id",
-  "version": "5.3.7",
+  "version": "5.3.8",
   "description": "Express middleware to set a correlation in Express. The correlation id will be consistent across async calls within the handling of a request.",
   "main": "dist/src/index.js",
   "typings": "dist/src",
