@@ -1,4 +1,4 @@
-const { AsyncLocalStorage } = require('async_hooks');
+import { AsyncLocalStorage } from 'async_hooks';
 import * as cls from 'cls-hooked';
 import { EventEmitter } from 'events';
 import * as express from 'express';
@@ -113,6 +113,7 @@ class CorrelationIdServiceWithClsHooked implements ICorrelationIdService {
         try {
           work().then(resolve).catch(reject);
         } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
           reject(err);
         }
       }, cid);
@@ -165,15 +166,18 @@ class CorrelationIdServiceWithClsHooked implements ICorrelationIdService {
     return emitter;
   }
 
-  // tslint:disable-next-line: ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   private bindFunction<T extends Function>(target: T): T {
     return this.store.bind(target);
   }
 }
 
-// tslint:disable-next-line: max-classes-per-file
+interface AsyncLocalStorageData {
+  correlationId?: string;
+}
+
 class CorrelationIdServiceWithAsyncLocalStorage implements ICorrelationIdService {
-  private storage = new AsyncLocalStorage();
+  private storage = new AsyncLocalStorage<AsyncLocalStorageData>();
 
   public createNewId(): CorrelationId {
     return uuid();
@@ -233,7 +237,7 @@ class CorrelationIdServiceWithAsyncLocalStorage implements ICorrelationIdService
     return emitter;
   }
 
-  // tslint:disable-next-line: ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   private bindFunction<T extends Function>(target: T): T {
     const storage = this.storage;
     const store = this.storage.getStore();
