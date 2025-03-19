@@ -1,3 +1,7 @@
+**WARNING!!!!**
+
+This repository has been transferred here: https://github.com/VilledeMontreal/node-core-libs/tree/main/packages/node-correlation-id
+
 # @villedemontreal/correlation-id
 Module fournissant un middleware Express pour propager ou/et générer le correlation id et un service permettant de le récupérer à n'importe quel moment de la requête sans devoir le propager à la main.
 
